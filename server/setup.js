@@ -5,11 +5,10 @@ require('dotenv').config();
 const setupDatabase = async () => {
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    console.log('🔄 Connecting to MongoDB...');
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('✅ Connected to MongoDB');
+    console.log('📊 Database:', mongoose.connection.name);
 
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({ email: process.env.ADMIN_EMAIL });

@@ -10,7 +10,8 @@
     "install-all": "npm install && cd client && npm install",
     "build": "cd client && npm install && npm run build",
     "setup": "node server/setup.js",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "test-db": "node test-connection.js"
   },
   "keywords": ["education", "course", "admin", "react", "express"],
   "author": "",

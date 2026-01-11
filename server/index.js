@@ -23,12 +23,18 @@ app.use(morgan('dev'));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => {
+  console.log('✅ MongoDB connected successfully');
+  console.log('📊 Database:', mongoose.connection.name);
 })
-.then(() => console.log('✅ MongoDB connected successfully'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+.catch(err => {
+  console.error('❌ MongoDB connection error:', err.message);
+  console.error('💡 Check if:');
+  console.error('   1. Your IP is whitelisted in MongoDB Atlas');
+  console.error('   2. The cluster is running (not paused)');
+  console.error('   3. Connection string is correct in .env file');
+});
 
 // Import routes
 const authRoutes = require('./routes/auth');
