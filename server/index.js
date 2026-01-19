@@ -13,6 +13,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust Vercel's reverse proxy (required for serverless deployment)
+app.set('trust proxy', true);
+
 // =====================================================
 // Security Middleware - Production Grade
 // =====================================================
