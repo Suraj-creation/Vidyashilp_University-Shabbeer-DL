@@ -195,14 +195,50 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 }
 
-// Initialize database connection
-connectDB().catch(err => {
-  console.error('Failed to connect to MongoDB:', err.message);
-  // Don't exit in serverless - let individual requests handle connection
-  if (process.env.NODE_ENV !== 'production') {
-    process.exit(1);
+// =====================================================
+// Auto-create Admin User if not exists
+// =====================================================
+const createDefaultAdmin = async () => {
+  try {
+    const Admin = require('./models/Admin');
+    
+    // Check if admin exists
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@dlcourse.com';
+    const existingAdmin = await Admin.findOne({ email: adminEmail });
+    
+    if (!existingAdmin) {
+      console.log('🔄 Creating default admin user...');
+      const admin = new Admin({
+        name: 'Dr. Shabbeer Basha',
+        email: adminEmail,
+        password: process.env.ADMIN_PASSWORD || 'admin123',
+        role: 'superadmin'
+      });
+      await admin.save();
+      console.log('✅ Default admin created:', adminEmail);
+    } else {
+      console.log('✅ Admin user exists:', adminEmail);
+    }
+  } catch (error) {
+    console.error('⚠️ Error checking/creating admin:', error.message);
   }
-});
+};
+
+// Initialize database connection and create admin
+const initializeApp = async () => {
+  try {
+    await connectDB();
+    await createDefaultAdmin();
+  } catch (err) {
+    console.error('Failed to initialize app:', err.message);
+    // Don't exit in serverless - let individual requests handle connection
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+  }
+};
+
+initializeApp();
 
 // =====================================================
 // Middleware to ensure DB connection for each request
