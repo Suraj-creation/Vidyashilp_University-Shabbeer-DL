@@ -168,14 +168,18 @@ const HomePage = () => {
 
               {/* CTA Buttons */}
               <div className="hero-cta-group">
-                <Link to="/lectures" className="cta-primary-btn">
-                  <FaBookOpen />
-                  <span>Start Learning</span>
+                <Link to="/register" className="cta-primary-btn">
+                  <FaGraduationCap />
+                  <span>Enroll Now</span>
                   <FaArrowRight className="arrow-icon" />
                 </Link>
 
-                <Link to="/prerequisites" className="cta-tertiary-btn">
-                  <span>View Prerequisites</span>
+                <Link to="/login" className="cta-secondary-btn">
+                  <span>Login</span>
+                </Link>
+
+                <Link to="/admin/login" className="cta-tertiary-btn">
+                  <span>Admin Portal</span>
                 </Link>
               </div>
             </div>

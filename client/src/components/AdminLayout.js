@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { 
   FaHome, FaBook, FaGraduationCap, FaTasks, 
   FaBookReader, FaClipboardList, FaFileAlt, FaBoxOpen, 
-  FaSignOutAlt 
+  FaSignOutAlt, FaUsers 
 } from 'react-icons/fa';
 import './AdminLayout.css';
 
@@ -27,6 +27,7 @@ const AdminLayout = () => {
     { path: '/admin/prerequisites', icon: <FaClipboardList />, label: 'Prerequisites' },
     { path: '/admin/exams', icon: <FaFileAlt />, label: 'Exams' },
     { path: '/admin/resources', icon: <FaBoxOpen />, label: 'Resources' },
+    { path: '/admin/users', icon: <FaUsers />, label: 'Users' },
   ];
 
   const isActive = (path, exact) => {

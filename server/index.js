@@ -104,6 +104,27 @@ if (process.env.NODE_ENV !== 'production') {
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // =====================================================
+// Passport.js Configuration for Google OAuth
+// =====================================================
+const passport = require('./config/passport');
+const session = require('express-session');
+
+// Session middleware (required for OAuth)
+app.use(session({
+  secret: process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// =====================================================
 // MongoDB Connection - Production Grade for Vercel
 // =====================================================
 
@@ -385,9 +406,11 @@ const tutorialRoutes = require('./routes/tutorials');
 const prerequisiteRoutes = require('./routes/prerequisites');
 const examRoutes = require('./routes/exams');
 const resourceRoutes = require('./routes/resources');
+const userRoutes = require('./routes/users'); // User authentication routes
 
 // API Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes); // Admin authentication
+app.use('/api/users', userRoutes); // User/Student authentication & OAuth
 app.use('/api/courses', courseRoutes);
 app.use('/api/lectures', lectureRoutes);
 app.use('/api/assignments', assignmentRoutes);
