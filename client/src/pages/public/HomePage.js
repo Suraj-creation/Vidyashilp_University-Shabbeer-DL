@@ -259,21 +259,6 @@ const HomePage = () => {
                   with industry collaboration experience.
                 </p>
 
-                <div className="instructor-stats">
-                  <div className="inst-stat">
-                    <span className="inst-stat-value">10+</span>
-                    <span className="inst-stat-label">Years Teaching</span>
-                  </div>
-                  <div className="inst-stat">
-                    <span className="inst-stat-value">500+</span>
-                    <span className="inst-stat-label">Students Taught</span>
-                  </div>
-                  <div className="inst-stat">
-                    <span className="inst-stat-value">25+</span>
-                    <span className="inst-stat-label">Publications</span>
-                  </div>
-                </div>
-
                 <a 
                   href="https://sites.google.com/site/shabbeerbashash" 
                   target="_blank" 
