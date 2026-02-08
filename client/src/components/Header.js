@@ -96,30 +96,14 @@ const Header = () => {
           <Link to="/" className="header-logo">
             <div className="logo-icon-wrapper">
               <svg className="logo-icon-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Neural network nodes */}
-                <circle cx="8" cy="12" r="3" fill="#A78BFA" />
-                <circle cx="8" cy="28" r="3" fill="#A78BFA" />
-                <circle cx="20" cy="10" r="3.5" fill="#818CF8" />
-                <circle cx="20" cy="20" r="4" fill="#6366F1" />
-                <circle cx="20" cy="30" r="3.5" fill="#818CF8" />
-                <circle cx="32" cy="20" r="4" fill="#4F46E5" />
-                {/* Connection lines */}
-                <path d="M11 12 L16 10" stroke="#A78BFA" strokeWidth="1.5" opacity="0.7" />
-                <path d="M11 12 L16 20" stroke="#A78BFA" strokeWidth="1.5" opacity="0.7" />
-                <path d="M11 28 L16 20" stroke="#A78BFA" strokeWidth="1.5" opacity="0.7" />
-                <path d="M11 28 L16 30" stroke="#A78BFA" strokeWidth="1.5" opacity="0.7" />
-                <path d="M24 10 L28 20" stroke="#818CF8" strokeWidth="1.5" opacity="0.8" />
-                <path d="M24 20 L28 20" stroke="#6366F1" strokeWidth="2" />
-                <path d="M24 30 L28 20" stroke="#818CF8" strokeWidth="1.5" opacity="0.8" />
-                {/* Activation wave */}
-                <path d="M5 20 Q10 14, 15 20 T25 20 T35 20" stroke="url(#waveGradient)" strokeWidth="2" fill="none" opacity="0.6" />
                 <defs>
-                  <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <linearGradient id="dlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#A78BFA" />
-                    <stop offset="50%" stopColor="#6366F1" />
                     <stop offset="100%" stopColor="#4F46E5" />
                   </linearGradient>
                 </defs>
+                <rect x="2" y="2" width="36" height="36" rx="10" fill="url(#dlGrad)" />
+                <text x="20" y="27" textAnchor="middle" fontFamily="'Inter', sans-serif" fontWeight="800" fontSize="18" fill="#FFFFFF" letterSpacing="-0.5">DL</text>
               </svg>
             </div>
             <div className="logo-text-wrapper">
@@ -220,20 +204,14 @@ const Header = () => {
           <div className="mobile-logo">
             <div className="logo-icon-wrapper small">
               <svg className="logo-icon-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="8" cy="12" r="3" fill="#A78BFA" />
-                <circle cx="8" cy="28" r="3" fill="#A78BFA" />
-                <circle cx="20" cy="20" r="4" fill="#6366F1" />
-                <circle cx="32" cy="20" r="4" fill="#4F46E5" />
-                <path d="M11 12 L16 20" stroke="#A78BFA" strokeWidth="1.5" opacity="0.7" />
-                <path d="M11 28 L16 20" stroke="#A78BFA" strokeWidth="1.5" opacity="0.7" />
-                <path d="M24 20 L28 20" stroke="#6366F1" strokeWidth="2" />
-                <path d="M5 20 Q10 14, 15 20 T25 20 T35 20" stroke="url(#waveGradientMobile)" strokeWidth="2" fill="none" opacity="0.6" />
                 <defs>
-                  <linearGradient id="waveGradientMobile" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <linearGradient id="dlGradMobile" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#A78BFA" />
                     <stop offset="100%" stopColor="#4F46E5" />
                   </linearGradient>
                 </defs>
+                <rect x="2" y="2" width="36" height="36" rx="10" fill="url(#dlGradMobile)" />
+                <text x="20" y="27" textAnchor="middle" fontFamily="'Inter', sans-serif" fontWeight="800" fontSize="18" fill="#FFFFFF" letterSpacing="-0.5">DL</text>
               </svg>
             </div>
             <span>Deep<span className="logo-highlight">Learn</span></span>

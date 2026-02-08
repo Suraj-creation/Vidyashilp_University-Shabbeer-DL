@@ -67,9 +67,12 @@ const api = axios.create({
 // =====================================================
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Only set admin token if no Authorization header is already explicitly set
+    if (!config.headers.Authorization) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     // Add request timestamp for timing
     config.metadata = { startTime: Date.now() };
