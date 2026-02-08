@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { resourceAPI, courseAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const ResourceManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [resources, setResources] = useState([]);
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -55,14 +58,14 @@ const ResourceManager = () => {
       const dataToSubmit = { ...formData, courseId: selectedCourse, tags: formData.tags.filter(t => t.trim()) };
       if (editingId) {
         await resourceAPI.update(editingId, dataToSubmit);
-        alert('Resource updated successfully!');
+        toast.success('Resource updated successfully!');
       } else {
         await resourceAPI.create(dataToSubmit);
-        alert('Resource created successfully!');
+        toast.success('Resource created successfully!');
       }
       resetForm();
       loadResources();
-    } catch (error) { console.error('Error saving resource:', error); alert('Failed to save resource'); }
+    } catch (error) { console.error('Error saving resource:', error); toast.error('Failed to save resource'); }
   };
 
   const handleEdit = (resource) => {
@@ -77,12 +80,13 @@ const ResourceManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this resource?')) {
+    const ok = await confirm('Are you sure you want to delete this resource?');
+    if (ok) {
       try {
         await resourceAPI.delete(id);
-        alert('Resource deleted successfully!');
+        toast.success('Resource deleted successfully!');
         loadResources();
-      } catch (error) { console.error('Error deleting resource:', error); alert('Failed to delete resource'); }
+      } catch (error) { console.error('Error deleting resource:', error); toast.error('Failed to delete resource'); }
     }
   };
 

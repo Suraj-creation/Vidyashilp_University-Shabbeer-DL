@@ -161,10 +161,6 @@ const StudentDashboard = () => {
                 <span className="link-icon">📁</span>
                 <span className="link-text">Resources</span>
               </Link>
-              <Link to="/teaching-team" className="quick-link-card">
-                <span className="link-icon">👥</span>
-                <span className="link-text">Teaching Team</span>
-              </Link>
             </div>
           </section>
         </div>

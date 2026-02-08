@@ -6,6 +6,7 @@ const auth = require('../middleware/auth');
 // Get all resources for a course
 router.get('/course/:courseId', async (req, res) => {
   try {
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600');
     const { category } = req.query;
     const query = { courseId: req.params.courseId, isActive: true };
     if (category) query.category = category;

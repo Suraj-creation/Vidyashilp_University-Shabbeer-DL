@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { prerequisiteAPI, courseAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const PrerequisiteManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [prerequisites, setPrerequisites] = useState([]);
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -60,14 +63,14 @@ const PrerequisiteManager = () => {
       const dataToSubmit = { ...formData, courseId: selectedCourse, resources: formData.resources.filter(r => r.title.trim()) };
       if (editingId) {
         await prerequisiteAPI.update(editingId, dataToSubmit);
-        alert('Prerequisite updated successfully!');
+        toast.success('Prerequisite updated successfully!');
       } else {
         await prerequisiteAPI.create(dataToSubmit);
-        alert('Prerequisite created successfully!');
+        toast.success('Prerequisite created successfully!');
       }
       resetForm();
       loadPrerequisites();
-    } catch (error) { console.error('Error saving prerequisite:', error); alert('Failed to save prerequisite'); }
+    } catch (error) { console.error('Error saving prerequisite:', error); toast.error('Failed to save prerequisite'); }
   };
 
   const handleEdit = (prereq) => {
@@ -81,12 +84,13 @@ const PrerequisiteManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this prerequisite?')) {
+    const ok = await confirm('Are you sure you want to delete this prerequisite?');
+    if (ok) {
       try {
         await prerequisiteAPI.delete(id);
-        alert('Prerequisite deleted successfully!');
+        toast.success('Prerequisite deleted successfully!');
         loadPrerequisites();
-      } catch (error) { console.error('Error deleting prerequisite:', error); alert('Failed to delete prerequisite'); }
+      } catch (error) { console.error('Error deleting prerequisite:', error); toast.error('Failed to delete prerequisite'); }
     }
   };
 

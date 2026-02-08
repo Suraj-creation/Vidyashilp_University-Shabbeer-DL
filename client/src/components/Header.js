@@ -165,11 +165,13 @@ const Header = () => {
               </Link>
             )}
 
-            {/* Admin Portal Button - Professional Design */}
-            <Link to="/admin/login" className="admin-portal-btn">
-              <FaShieldAlt className="admin-icon" />
-              <span className="admin-text">Admin Portal</span>
-            </Link>
+            {/* Admin Portal Button - Only shown when no student is logged in */}
+            {!isAuthenticated && (
+              <Link to="/admin/login" className="admin-portal-btn">
+                <FaShieldAlt className="admin-icon" />
+                <span className="admin-text">Admin Portal</span>
+              </Link>
+            )}
 
             {/* Mobile Menu Toggle */}
             <button 
@@ -282,13 +284,15 @@ const Header = () => {
               <FaUser /> Login
             </Link>
           )}
-          <Link 
-            to="/admin/login" 
-            className="mobile-admin-btn"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            <FaShieldAlt /> Admin Portal
-          </Link>
+          {!isAuthenticated && (
+            <Link 
+              to="/admin/login" 
+              className="mobile-admin-btn"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <FaShieldAlt /> Admin Portal
+            </Link>
+          )}
         </div>
       </nav>
     </>

@@ -6,6 +6,7 @@ const auth = require('../middleware/auth');
 // Get all prerequisites for a course
 router.get('/course/:courseId', async (req, res) => {
   try {
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600');
     const prerequisites = await Prerequisite.find({ courseId: req.params.courseId }).sort({ order: 1 });
     res.json({ success: true, count: prerequisites.length, data: prerequisites });
   } catch (error) {

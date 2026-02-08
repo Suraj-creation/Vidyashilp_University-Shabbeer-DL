@@ -27,6 +27,7 @@ import {
   FaSync
 } from 'react-icons/fa';
 import './PublicPages.css';
+import './ExamsPage.css';
 
 // =====================================================
 // UTILITY FUNCTIONS

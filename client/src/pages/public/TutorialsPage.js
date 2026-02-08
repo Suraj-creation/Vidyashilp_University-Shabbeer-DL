@@ -29,6 +29,7 @@ import {
   FaCalendarAlt
 } from 'react-icons/fa';
 import './PublicPages.css';
+import './TutorialsPage.css';
 
 // Difficulty configuration
 const difficultyConfig = {

@@ -9,7 +9,8 @@ const {
   sendList, 
   sendNotFound, 
   handleRouteError,
-  optimizeQuery 
+  optimizeQuery,
+  cacheControl
 } = require('../utils/routeHelpers');
 
 // =====================================================
@@ -17,7 +18,7 @@ const {
 // @desc    Get all published lectures for a course (Public)
 // @access  Public
 // =====================================================
-router.get('/course/:courseId', validateObjectId('courseId'), asyncHandler(async (req, res) => {
+router.get('/course/:courseId', cacheControl(300), validateObjectId('courseId'), asyncHandler(async (req, res) => {
   const query = Lecture.find({ 
     courseId: req.params.courseId,
     isPublished: true 

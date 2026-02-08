@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { FiAlertTriangle, FiRefreshCw, FiRotateCcw, FiHome } from 'react-icons/fi';
 
 /**
  * Error Boundary Component
@@ -6,7 +7,7 @@ import React, { Component } from 'react';
  * Catches JavaScript errors anywhere in the child component tree,
  * logs those errors, and displays a fallback UI instead of crashing.
  * 
- * Best Practice: Wrap major sections of your app to prevent full crashes
+ * Styles are in design-tokens.css (.error-boundary-*)
  */
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -61,41 +62,41 @@ class ErrorBoundary extends Component {
       }
 
       return (
-        <div style={styles.container}>
-          <div style={styles.content}>
-            <div style={styles.iconWrapper}>
-              <span style={styles.icon}>⚠️</span>
+        <div className="error-boundary">
+          <div className="error-boundary-card">
+            <div className="error-boundary-icon-wrapper">
+              <FiAlertTriangle className="error-boundary-icon" />
             </div>
-            <h1 style={styles.title}>Something went wrong</h1>
-            <p style={styles.message}>
+            <h1 className="error-boundary-title">Something went wrong</h1>
+            <p className="error-boundary-message">
               We're sorry, but something unexpected happened. 
               Please try again or return to the home page.
             </p>
             
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details style={styles.details}>
-                <summary style={styles.summary}>Error Details (Development Only)</summary>
-                <pre style={styles.errorText}>
+              <details className="error-boundary-details">
+                <summary className="error-boundary-summary">Error Details (Development Only)</summary>
+                <pre className="error-boundary-pre">
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>
               </details>
             )}
             
-            <div style={styles.buttonGroup}>
-              <button onClick={this.handleRetry} style={styles.primaryButton}>
-                🔄 Try Again
+            <div className="error-boundary-actions">
+              <button onClick={this.handleRetry} className="error-boundary-btn error-boundary-btn-primary">
+                <FiRefreshCw /> Try Again
               </button>
-              <button onClick={this.handleRefresh} style={styles.secondaryButton}>
-                ↻ Refresh Page
+              <button onClick={this.handleRefresh} className="error-boundary-btn error-boundary-btn-secondary">
+                <FiRotateCcw /> Refresh Page
               </button>
-              <button onClick={this.handleGoHome} style={styles.outlineButton}>
-                🏠 Go Home
+              <button onClick={this.handleGoHome} className="error-boundary-btn error-boundary-btn-outline">
+                <FiHome /> Go Home
               </button>
             </div>
             
             {this.state.retryCount > 2 && (
-              <p style={styles.helpText}>
+              <p className="error-boundary-help">
                 If the problem persists, please try clearing your browser cache 
                 or contact support.
               </p>
@@ -108,110 +109,5 @@ class ErrorBoundary extends Component {
     return this.props.children;
   }
 }
-
-// Inline styles for the error boundary (ensures styles work even if CSS fails)
-const styles = {
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '20px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-  },
-  content: {
-    background: 'white',
-    borderRadius: '16px',
-    padding: '48px',
-    maxWidth: '500px',
-    width: '100%',
-    textAlign: 'center',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-  },
-  iconWrapper: {
-    marginBottom: '24px'
-  },
-  icon: {
-    fontSize: '64px'
-  },
-  title: {
-    margin: '0 0 16px',
-    fontSize: '24px',
-    fontWeight: '700',
-    color: '#1f2937'
-  },
-  message: {
-    margin: '0 0 24px',
-    fontSize: '16px',
-    color: '#6b7280',
-    lineHeight: '1.6'
-  },
-  buttonGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    marginTop: '24px'
-  },
-  primaryButton: {
-    padding: '14px 28px',
-    fontSize: '16px',
-    fontWeight: '600',
-    color: 'white',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'transform 0.2s, box-shadow 0.2s'
-  },
-  secondaryButton: {
-    padding: '14px 28px',
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#4F46E5',
-    background: '#EEF2FF',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'background 0.2s'
-  },
-  outlineButton: {
-    padding: '14px 28px',
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#6b7280',
-    background: 'transparent',
-    border: '2px solid #e5e7eb',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'border-color 0.2s, color 0.2s'
-  },
-  details: {
-    marginTop: '24px',
-    textAlign: 'left',
-    background: '#fef2f2',
-    borderRadius: '8px',
-    padding: '16px'
-  },
-  summary: {
-    cursor: 'pointer',
-    fontWeight: '600',
-    color: '#dc2626',
-    marginBottom: '8px'
-  },
-  errorText: {
-    fontSize: '12px',
-    color: '#7f1d1d',
-    overflow: 'auto',
-    maxHeight: '200px',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word'
-  },
-  helpText: {
-    marginTop: '24px',
-    fontSize: '14px',
-    color: '#9ca3af'
-  }
-};
 
 export default ErrorBoundary;

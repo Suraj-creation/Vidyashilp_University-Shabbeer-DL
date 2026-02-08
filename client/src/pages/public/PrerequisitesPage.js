@@ -20,6 +20,7 @@ import {
   FaLightbulb
 } from 'react-icons/fa';
 import './PublicPages.css';
+import './PrerequisitesPage.css';
 
 // Helper function to parse description text and convert to proper HTML structure
 const parseDescription = (text) => {

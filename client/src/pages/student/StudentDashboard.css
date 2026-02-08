@@ -22,10 +22,7 @@
   margin-bottom: 15px;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+/* @keyframes spin is in design-tokens.css */
 
 .dashboard-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

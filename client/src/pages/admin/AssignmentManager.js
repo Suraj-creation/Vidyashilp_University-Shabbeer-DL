@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { assignmentAPI, courseAPI, lectureAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const AssignmentManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [assignments, setAssignments] = useState([]);
   const [courses, setCourses] = useState([]);
   const [lectures, setLectures] = useState([]);
@@ -37,10 +40,10 @@ const AssignmentManager = () => {
     e.preventDefault();
     try {
       const dataToSubmit = { ...formData, courseId: selectedCourse, learningObjectives: formData.learningObjectives.filter(obj => obj.trim()), requirements: formData.requirements.filter(req => req.trim()), rubric: formData.rubric.filter(r => r.criteria.trim()), isPublished: true };
-      if (editingId) { await assignmentAPI.update(editingId, dataToSubmit); alert('Assignment updated!'); }
-      else { await assignmentAPI.create(dataToSubmit); alert('Assignment created!'); }
+      if (editingId) { await assignmentAPI.update(editingId, dataToSubmit); toast.success('Assignment updated!'); }
+      else { await assignmentAPI.create(dataToSubmit); toast.success('Assignment created!'); }
       resetForm(); loadAssignments();
-    } catch (error) { console.error('Error:', error); alert('Failed to save'); }
+    } catch (error) { console.error('Error:', error); toast.error('Failed to save'); }
   };
 
   const handleEdit = (a) => {
@@ -48,7 +51,7 @@ const AssignmentManager = () => {
     setEditingId(a._id); setShowForm(true);
   };
 
-  const handleDelete = async (id) => { if (window.confirm('Are you sure?')) { try { await assignmentAPI.delete(id); alert('Deleted!'); loadAssignments(); } catch (error) { alert('Failed'); } } };
+  const handleDelete = async (id) => { const ok = await confirm('Are you sure you want to delete this assignment?'); if (ok) { try { await assignmentAPI.delete(id); toast.success('Deleted!'); loadAssignments(); } catch (error) { toast.error('Failed to delete'); } } };
   const resetForm = () => { setFormData({ course: '', assignmentNumber: '', title: '', description: '', learningObjectives: [''], requirements: [''], relatedLectures: [], releaseDate: '', dueDate: '', totalPoints: '', status: 'Upcoming', submissionFormat: '', rubric: [{ criteria: '', points: '', description: '' }] }); setEditingId(null); setShowForm(false); };
 
   return (

@@ -29,6 +29,7 @@ import {
   FaBrain
 } from 'react-icons/fa';
 import './PublicPages.css';
+import './AssignmentsPage.css';
 
 // ============================================
 // HELPER FUNCTIONS

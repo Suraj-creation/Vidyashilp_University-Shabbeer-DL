@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { examAPI, courseAPI, lectureAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const ExamManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [exams, setExams] = useState([]);
   const [courses, setCourses] = useState([]);
   const [lectures, setLectures] = useState([]);
@@ -44,10 +47,10 @@ const ExamManager = () => {
     e.preventDefault();
     try {
       const data = { ...formData, courseId: selectedCourse, syllabus: formData.syllabus.filter(s => s.trim()), guidelines: formData.guidelines.filter(g => g.trim()), preparationResources: formData.preparationResources.filter(r => r.title.trim()), isPublished: true };
-      if (editingId) { await examAPI.update(editingId, data); alert('Exam updated!'); }
-      else { await examAPI.create(data); alert('Exam created!'); }
+      if (editingId) { await examAPI.update(editingId, data); toast.success('Exam updated!'); }
+      else { await examAPI.create(data); toast.success('Exam created!'); }
       resetForm(); loadExams();
-    } catch (e) { console.error(e); alert('Failed to save'); }
+    } catch (e) { console.error(e); toast.error('Failed to save'); }
   };
 
   const handleEdit = (exam) => {
@@ -55,7 +58,7 @@ const ExamManager = () => {
     setEditingId(exam._id); setShowForm(true);
   };
 
-  const handleDelete = async (id) => { if (window.confirm('Delete?')) { try { await examAPI.delete(id); alert('Deleted!'); loadExams(); } catch (e) { alert('Failed'); } } };
+  const handleDelete = async (id) => { const ok = await confirm('Delete this exam?'); if (ok) { try { await examAPI.delete(id); toast.success('Deleted!'); loadExams(); } catch (e) { toast.error('Failed to delete'); } } };
   const resetForm = () => { setFormData({ examType: 'Midterm', title: '', date: '', time: { start: '', end: '' }, location: '', duration: '', totalMarks: '', format: '', syllabus: [''], coveredLectures: [], guidelines: [''], preparationResources: [{ title: '', url: '' }] }); setEditingId(null); setShowForm(false); };
 
   return (

@@ -12,8 +12,18 @@ export const useStudentAuth = () => {
 };
 
 export const StudentAuthProvider = ({ children }) => {
-  const [student, setStudent] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Restore cached student data for instant render, validate in background
+  const [student, setStudent] = useState(() => {
+    try {
+      const cached = localStorage.getItem('studentData');
+      return cached ? JSON.parse(cached) : null;
+    } catch { return null; }
+  });
+  const [loading, setLoading] = useState(() => {
+    const hasToken = !!localStorage.getItem('studentToken');
+    const hasCached = !!localStorage.getItem('studentData');
+    return hasToken && !hasCached;
+  });
   const [token, setToken] = useState(localStorage.getItem('studentToken'));
 
   useEffect(() => {
@@ -34,11 +44,15 @@ export const StudentAuthProvider = ({ children }) => {
       }
       
       const response = await userAPI.getMe(currentToken);
-      setStudent(response.data.user);
+      const studentData = response.data.user;
+      setStudent(studentData);
+      // Cache student data for instant render on next visit
+      localStorage.setItem('studentData', JSON.stringify(studentData));
     } catch (error) {
       console.error('Failed to load student:', error);
-      // Clear invalid token
+      // Clear invalid token and cached data
       localStorage.removeItem('studentToken');
+      localStorage.removeItem('studentData');
       setToken(null);
       setStudent(null);
     } finally {
@@ -52,6 +66,7 @@ export const StudentAuthProvider = ({ children }) => {
       const { token: newToken, user } = response.data;
       
       localStorage.setItem('studentToken', newToken);
+      localStorage.setItem('studentData', JSON.stringify(user));
       setToken(newToken);
       setStudent(user);
       
@@ -70,6 +85,7 @@ export const StudentAuthProvider = ({ children }) => {
       const { token: newToken, user } = response.data;
       
       localStorage.setItem('studentToken', newToken);
+      localStorage.setItem('studentData', JSON.stringify(user));
       setToken(newToken);
       setStudent(user);
       
@@ -84,6 +100,7 @@ export const StudentAuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('studentToken');
+    localStorage.removeItem('studentData');
     setToken(null);
     setStudent(null);
   };

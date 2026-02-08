@@ -32,6 +32,7 @@ import {
   FaCopy
 } from 'react-icons/fa';
 import './PublicPages.css';
+import './ResourcesPage.css';
 
 // Category configuration with icons, colors, and emojis
 const categoryConfig = {

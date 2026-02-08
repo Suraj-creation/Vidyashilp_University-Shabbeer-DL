@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { courseAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const CourseManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [courses, setCourses] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -36,7 +39,7 @@ const CourseManager = () => {
       setCourses(response.data.data || []);
     } catch (error) {
       console.error('Error loading courses:', error);
-      alert('Failed to load courses');
+      toast.error('Failed to load courses');
     }
   };
 
@@ -61,16 +64,16 @@ const CourseManager = () => {
     try {
       if (editingId) {
         await courseAPI.update(editingId, formData);
-        alert('Course updated successfully!');
+        toast.success('Course updated successfully!');
       } else {
         await courseAPI.create(formData);
-        alert('Course created successfully!');
+        toast.success('Course created successfully!');
       }
       resetForm();
       loadCourses();
     } catch (error) {
       console.error('Error saving course:', error);
-      alert('Failed to save course');
+      toast.error('Failed to save course');
     }
   };
 
@@ -99,14 +102,15 @@ const CourseManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this course?')) {
+    const ok = await confirm('Are you sure you want to delete this course?');
+    if (ok) {
       try {
         await courseAPI.delete(id);
-        alert('Course deleted successfully!');
+        toast.success('Course deleted successfully!');
         loadCourses();
       } catch (error) {
         console.error('Error deleting course:', error);
-        alert('Failed to delete course');
+        toast.error('Failed to delete course');
       }
     }
   };

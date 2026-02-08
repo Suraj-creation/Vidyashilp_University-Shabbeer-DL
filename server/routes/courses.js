@@ -9,7 +9,8 @@ const {
   sendList, 
   sendNotFound, 
   handleRouteError,
-  optimizeQuery 
+  optimizeQuery,
+  cacheControl
 } = require('../utils/routeHelpers');
 
 // =====================================================
@@ -17,7 +18,7 @@ const {
 // @desc    Get all active courses
 // @access  Public
 // =====================================================
-router.get('/', asyncHandler(async (req, res) => {
+router.get('/', cacheControl(300), asyncHandler(async (req, res) => {
   const query = Course.find({ isActive: true });
   const courses = await optimizeQuery(query, {
     sort: { createdAt: -1 },

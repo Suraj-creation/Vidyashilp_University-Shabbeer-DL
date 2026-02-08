@@ -105,24 +105,23 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // =====================================================
 // Passport.js Configuration for Google OAuth
+// (Session + Passport scoped to /api/users only)
 // =====================================================
 const passport = require('./config/passport');
 const session = require('express-session');
 
-// Session middleware (required for OAuth)
-app.use(session({
+const oauthSession = session({
   secret: process.env.JWT_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000
   }
-}));
+});
 
-// Initialize Passport
-app.use(passport.initialize());
-app.use(passport.session());
+// Create a mini-router that applies session + passport only to user/OAuth routes
+const oauthMiddleware = [oauthSession, passport.initialize(), passport.session()];
 
 // =====================================================
 // MongoDB Connection - Production Grade for Vercel
@@ -135,16 +134,16 @@ const mongooseOptions = {
   // =====================================================
   // OPTIMIZED CONNECTION POOL - Fast & Efficient
   // =====================================================
-  maxPoolSize: 10,                    // Balanced pool size for stability
+  maxPoolSize: 15,                    // Balanced pool size for serverless
   minPoolSize: 2,                     // Minimum connections ready
   
   // =====================================================
-  // OPTIMIZED TIMEOUTS - Balanced for Stability
+  // OPTIMIZED TIMEOUTS - Faster Failover
   // =====================================================
-  serverSelectionTimeoutMS: 15000,    // Allow more time for server selection (15s)
-  socketTimeoutMS: 45000,             // Socket timeout (45s) for slow operations
-  connectTimeoutMS: 30000,            // Connection timeout (30s) for initial connect
-  heartbeatFrequencyMS: 10000,        // Heartbeat every 10s to keep connection alive
+  serverSelectionTimeoutMS: 5000,     // Fast server selection (was 15s)
+  socketTimeoutMS: 30000,             // Socket timeout (was 45s)
+  connectTimeoutMS: 5000,             // Fast initial connect (was 30s)
+  heartbeatFrequencyMS: 5000,         // More frequent health checks (was 10s)
   
   // =====================================================
   // WRITE/READ OPTIMIZATION
@@ -157,13 +156,13 @@ const mongooseOptions = {
   // =====================================================
   // CONNECTION STABILITY - KEEP ALIVE
   // =====================================================
-  maxIdleTimeMS: 300000,              // Keep idle connections for 5 minutes
+  maxIdleTimeMS: 60000,               // Keep idle connections for 1 min (was 5 min)
   waitQueueTimeoutMS: 10000,          // Wait queue timeout
   
   // =====================================================
   // SERVERLESS & PERFORMANCE OPTIMIZATION
   // =====================================================
-  bufferCommands: true,               // Buffer commands when disconnected (helps with reconnection)
+  bufferCommands: false,              // Fail fast instead of queuing when disconnected
   compressors: ['zlib'],              // Enable compression for faster data transfer
   
   // =====================================================
@@ -410,7 +409,7 @@ const userRoutes = require('./routes/users'); // User authentication routes
 
 // API Routes
 app.use('/api/auth', authRoutes); // Admin authentication
-app.use('/api/users', userRoutes); // User/Student authentication & OAuth
+app.use('/api/users', oauthMiddleware[0], oauthMiddleware[1], oauthMiddleware[2], userRoutes); // User/Student auth & OAuth (session scoped here)
 app.use('/api/courses', courseRoutes);
 app.use('/api/lectures', lectureRoutes);
 app.use('/api/assignments', assignmentRoutes);

@@ -1,14 +1,7 @@
 /* =====================================================
    FOOTER STYLES - Production Grade Design
+   Tokens live in design-tokens.css
    ===================================================== */
-
-:root {
-  --footer-bg: #0F172A;
-  --footer-text: #94A3B8;
-  --footer-heading: #F1F5F9;
-  --footer-border: rgba(255, 255, 255, 0.08);
-  --footer-link-hover: #4F46E5;
-}
 
 .site-footer {
   background: linear-gradient(180deg, #1E293B 0%, var(--footer-bg) 100%);

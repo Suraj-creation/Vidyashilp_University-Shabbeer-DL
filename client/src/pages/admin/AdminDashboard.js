@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiBarChart2, FiBook, FiBookOpen, FiEdit3, FiLayers, FiClipboard, FiPackage, FiPlusCircle, FiCheckCircle, FiFileText } from 'react-icons/fi';
 import { courseAPI, lectureAPI, assignmentAPI, tutorialAPI, examAPI, resourceAPI } from '../../services/api';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     courses: 0,
     lectures: 0,
@@ -79,12 +82,12 @@ const AdminDashboard = () => {
 
   return (
     <div className="dashboard">
-      <h1 className="dashboard-title">📊 Dashboard</h1>
+      <h1 className="dashboard-title"><FiBarChart2 style={{ marginRight: 8, verticalAlign: 'middle' }} /> Dashboard</h1>
       <p className="dashboard-subtitle">Welcome to your course management system</p>
 
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon">📚</div>
+          <div className="stat-icon"><FiBook /></div>
           <div className="stat-content">
             <h3>{stats.courses}</h3>
             <p>Courses</p>
@@ -92,7 +95,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🎓</div>
+          <div className="stat-icon"><FiBookOpen /></div>
           <div className="stat-content">
             <h3>{stats.lectures}</h3>
             <p>Lectures</p>
@@ -100,7 +103,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">📝</div>
+          <div className="stat-icon"><FiEdit3 /></div>
           <div className="stat-content">
             <h3>{stats.assignments}</h3>
             <p>Assignments</p>
@@ -108,7 +111,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">📖</div>
+          <div className="stat-icon"><FiLayers /></div>
           <div className="stat-content">
             <h3>{stats.tutorials}</h3>
             <p>Tutorials</p>
@@ -116,7 +119,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">📋</div>
+          <div className="stat-icon"><FiClipboard /></div>
           <div className="stat-content">
             <h3>{stats.exams}</h3>
             <p>Exams</p>
@@ -124,7 +127,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">📦</div>
+          <div className="stat-icon"><FiPackage /></div>
           <div className="stat-content">
             <h3>{stats.resources}</h3>
             <p>Resources</p>
@@ -135,17 +138,17 @@ const AdminDashboard = () => {
       <div className="quick-actions">
         <h2>Quick Actions</h2>
         <div className="action-grid">
-          <button className="action-btn" onClick={() => window.location.href = '/admin/courses'}>
-            ➕ Create New Course
+          <button className="action-btn" onClick={() => navigate('/admin/courses')}>
+            <FiPlusCircle /> Create New Course
           </button>
-          <button className="action-btn" onClick={() => window.location.href = '/admin/lectures'}>
-            📖 Add Lecture
+          <button className="action-btn" onClick={() => navigate('/admin/lectures')}>
+            <FiBookOpen /> Add Lecture
           </button>
-          <button className="action-btn" onClick={() => window.location.href = '/admin/assignments'}>
-            📝 Create Assignment
+          <button className="action-btn" onClick={() => navigate('/admin/assignments')}>
+            <FiEdit3 /> Create Assignment
           </button>
-          <button className="action-btn" onClick={() => window.location.href = '/admin/tutorials'}>
-            📚 Add Tutorial
+          <button className="action-btn" onClick={() => navigate('/admin/tutorials')}>
+            <FiBook /> Add Tutorial
           </button>
         </div>
       </div>
@@ -158,7 +161,7 @@ const AdminDashboard = () => {
               <li key={item._id || index}>
                 <strong>Lecture {item.lectureNumber}:</strong> {item.title}
                 <span className={`status-badge ${item.isPublished ? 'published' : 'draft'}`}>
-                  {item.isPublished ? '✅ Published' : '📝 Draft'}
+                  {item.isPublished ? <><FiCheckCircle style={{ marginRight: 4 }} /> Published</> : <><FiFileText style={{ marginRight: 4 }} /> Draft</>}
                 </span>
               </li>
             ))}

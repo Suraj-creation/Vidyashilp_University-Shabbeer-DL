@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FaUsers, FaSearch, FaSync, FaGoogle, FaEnvelope, FaCalendarAlt, FaClock, FaUserCheck, FaUserTimes, FaTrash } from 'react-icons/fa';
 import { authAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const UserManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,7 +46,8 @@ const UserManager = () => {
   }, [fetchUsers]);
 
   const handleDeleteUser = async (userId, userName) => {
-    if (!window.confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+    const ok = await confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`);
+    if (!ok) {
       return;
     }
 
@@ -57,7 +61,7 @@ const UserManager = () => {
       }));
     } catch (err) {
       console.error('Error deleting user:', err);
-      alert(err.response?.data?.message || 'Failed to delete user');
+      toast.error(err.response?.data?.message || 'Failed to delete user');
     }
   };
 

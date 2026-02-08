@@ -6,6 +6,7 @@ const auth = require('../middleware/auth');
 // Get all tutorials for a course (public - only published)
 router.get('/course/:courseId', async (req, res) => {
   try {
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600');
     const tutorials = await Tutorial.find({ 
       courseId: req.params.courseId,
       isPublished: true 

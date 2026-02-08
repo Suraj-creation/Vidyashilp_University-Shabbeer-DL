@@ -21,6 +21,7 @@ import {
   FaMicrochip
 } from 'react-icons/fa';
 import './PublicPages.css';
+import './HomePage.css';
 
 // =====================================================
 // HOMEPAGE COMPONENT - Premium Landing Page

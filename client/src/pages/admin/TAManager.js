@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { taAPI, courseAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const TAManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [tas, setTas] = useState([]);
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -69,14 +72,14 @@ const TAManager = () => {
       const dataToSubmit = { ...formData, courseId: selectedCourse, responsibilities: formData.responsibilities.filter(r => r.trim()) };
       if (editingId) {
         await taAPI.update(editingId, dataToSubmit);
-        alert('TA updated successfully!');
+        toast.success('TA updated successfully!');
       } else {
         await taAPI.create(dataToSubmit);
-        alert('TA created successfully!');
+        toast.success('TA created successfully!');
       }
       resetForm();
       loadTAs();
-    } catch (error) { console.error('Error saving TA:', error); alert('Failed to save TA'); }
+    } catch (error) { console.error('Error saving TA:', error); toast.error('Failed to save TA'); }
   };
 
   const handleEdit = (ta) => {
@@ -92,12 +95,13 @@ const TAManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this TA?')) {
+    const ok = await confirm('Are you sure you want to delete this TA?');
+    if (ok) {
       try {
         await taAPI.delete(id);
-        alert('TA deleted successfully!');
+        toast.success('TA deleted successfully!');
         loadTAs();
-      } catch (error) { console.error('Error deleting TA:', error); alert('Failed to delete TA'); }
+      } catch (error) { console.error('Error deleting TA:', error); toast.error('Failed to delete TA'); }
     }
   };
 

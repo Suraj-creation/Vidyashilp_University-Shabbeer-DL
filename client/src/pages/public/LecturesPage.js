@@ -11,6 +11,7 @@ import {
   FaTag, FaInfoCircle, FaEye, FaPlayCircle, FaGraduationCap
 } from 'react-icons/fa';
 import './PublicPages.css';
+import './LecturesPage.css';
 
 // =====================================================
 // UTILITY FUNCTIONS

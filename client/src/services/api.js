@@ -139,6 +139,31 @@ api.interceptors.response.use(
 );
 
 // =====================================================
+// Client-Side API Cache - Avoids redundant GETs
+// =====================================================
+const apiCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+const cachedGet = (url, ttl = CACHE_TTL) => {
+  const now = Date.now();
+  const entry = apiCache.get(url);
+  if (entry && now - entry.ts < ttl) {
+    return Promise.resolve(entry.data);   // return cloned response shape
+  }
+  return api.get(url).then((res) => {
+    apiCache.set(url, { data: res, ts: Date.now() });
+    return res;
+  });
+};
+
+// Invalidate cache entries that start with a given prefix
+const invalidateCache = (prefix) => {
+  for (const key of apiCache.keys()) {
+    if (key.startsWith(prefix)) apiCache.delete(key);
+  }
+};
+
+// =====================================================
 // API Helper - Wrapper with Built-in Error Handling
 // =====================================================
 const safeApiCall = async (apiPromise, defaultValue = null) => {
@@ -171,71 +196,71 @@ export const authAPI = {
 // Course API - with safe wrapper option
 // =====================================================
 export const courseAPI = {
-  getAll: () => api.get('/courses'),
-  getAllSafe: () => safeApiCall(api.get('/courses'), { data: [] }),
-  getById: (id) => api.get(`/courses/${id}`),
-  create: (data) => api.post('/courses', data),
-  update: (id, data) => api.put(`/courses/${id}`, data),
-  delete: (id) => api.delete(`/courses/${id}`)
+  getAll: () => cachedGet('/courses'),
+  getAllSafe: () => safeApiCall(cachedGet('/courses'), { data: [] }),
+  getById: (id) => cachedGet(`/courses/${id}`),
+  create: (data) => api.post('/courses', data).then(r => { invalidateCache('/courses'); return r; }),
+  update: (id, data) => api.put(`/courses/${id}`, data).then(r => { invalidateCache('/courses'); return r; }),
+  delete: (id) => api.delete(`/courses/${id}`).then(r => { invalidateCache('/courses'); return r; })
 };
 
 // =====================================================
 // Lecture API
 // =====================================================
 export const lectureAPI = {
-  getByCourse: (courseId) => api.get(`/lectures/course/${courseId}`),
-  getByCoursesSafe: (courseId) => safeApiCall(api.get(`/lectures/course/${courseId}`), { data: [] }),
+  getByCourse: (courseId) => cachedGet(`/lectures/course/${courseId}`),
+  getByCoursesSafe: (courseId) => safeApiCall(cachedGet(`/lectures/course/${courseId}`), { data: [] }),
   getAllByCourse: (courseId) => api.get(`/lectures/admin/course/${courseId}`),
-  getById: (id) => api.get(`/lectures/${id}`),
-  create: (data) => api.post('/lectures', data),
-  update: (id, data) => api.put(`/lectures/${id}`, data),
-  delete: (id) => api.delete(`/lectures/${id}`)
+  getById: (id) => cachedGet(`/lectures/${id}`),
+  create: (data) => api.post('/lectures', data).then(r => { invalidateCache('/lectures'); return r; }),
+  update: (id, data) => api.put(`/lectures/${id}`, data).then(r => { invalidateCache('/lectures'); return r; }),
+  delete: (id) => api.delete(`/lectures/${id}`).then(r => { invalidateCache('/lectures'); return r; })
 };
 
 // =====================================================
 // Assignment API
 // =====================================================
 export const assignmentAPI = {
-  getByCourse: (courseId) => api.get(`/assignments/course/${courseId}`),
+  getByCourse: (courseId) => cachedGet(`/assignments/course/${courseId}`),
   getAllByCourse: (courseId) => api.get(`/assignments/admin/course/${courseId}`),
-  getById: (id) => api.get(`/assignments/${id}`),
-  create: (data) => api.post('/assignments', data),
-  update: (id, data) => api.put(`/assignments/${id}`, data),
-  delete: (id) => api.delete(`/assignments/${id}`)
+  getById: (id) => cachedGet(`/assignments/${id}`),
+  create: (data) => api.post('/assignments', data).then(r => { invalidateCache('/assignments'); return r; }),
+  update: (id, data) => api.put(`/assignments/${id}`, data).then(r => { invalidateCache('/assignments'); return r; }),
+  delete: (id) => api.delete(`/assignments/${id}`).then(r => { invalidateCache('/assignments'); return r; })
 };
 
 // =====================================================
 // Tutorial API
 // =====================================================
 export const tutorialAPI = {
-  getByCourse: (courseId) => api.get(`/tutorials/course/${courseId}`),
+  getByCourse: (courseId) => cachedGet(`/tutorials/course/${courseId}`),
   getAllByCourse: (courseId) => api.get(`/tutorials/admin/course/${courseId}`),
-  getById: (id) => api.get(`/tutorials/${id}`),
-  create: (data) => api.post('/tutorials', data),
-  update: (id, data) => api.put(`/tutorials/${id}`, data),
-  delete: (id) => api.delete(`/tutorials/${id}`)
+  getById: (id) => cachedGet(`/tutorials/${id}`),
+  create: (data) => api.post('/tutorials', data).then(r => { invalidateCache('/tutorials'); return r; }),
+  update: (id, data) => api.put(`/tutorials/${id}`, data).then(r => { invalidateCache('/tutorials'); return r; }),
+  delete: (id) => api.delete(`/tutorials/${id}`).then(r => { invalidateCache('/tutorials'); return r; })
 };
 
 // =====================================================
 // Prerequisite API
 // =====================================================
 export const prerequisiteAPI = {
-  getByCourse: (courseId) => api.get(`/prerequisites/course/${courseId}`),
-  create: (data) => api.post('/prerequisites', data),
-  update: (id, data) => api.put(`/prerequisites/${id}`, data),
-  delete: (id) => api.delete(`/prerequisites/${id}`)
+  getByCourse: (courseId) => cachedGet(`/prerequisites/course/${courseId}`),
+  create: (data) => api.post('/prerequisites', data).then(r => { invalidateCache('/prerequisites'); return r; }),
+  update: (id, data) => api.put(`/prerequisites/${id}`, data).then(r => { invalidateCache('/prerequisites'); return r; }),
+  delete: (id) => api.delete(`/prerequisites/${id}`).then(r => { invalidateCache('/prerequisites'); return r; })
 };
 
 // =====================================================
 // Exam API
 // =====================================================
 export const examAPI = {
-  getByCourse: (courseId) => api.get(`/exams/course/${courseId}`),
+  getByCourse: (courseId) => cachedGet(`/exams/course/${courseId}`),
   getAllByCourse: (courseId) => api.get(`/exams/admin/course/${courseId}`),
-  getById: (id) => api.get(`/exams/${id}`),
-  create: (data) => api.post('/exams', data),
-  update: (id, data) => api.put(`/exams/${id}`, data),
-  delete: (id) => api.delete(`/exams/${id}`)
+  getById: (id) => cachedGet(`/exams/${id}`),
+  create: (data) => api.post('/exams', data).then(r => { invalidateCache('/exams'); return r; }),
+  update: (id, data) => api.put(`/exams/${id}`, data).then(r => { invalidateCache('/exams'); return r; }),
+  delete: (id) => api.delete(`/exams/${id}`).then(r => { invalidateCache('/exams'); return r; })
 };
 
 // =====================================================
@@ -246,22 +271,22 @@ export const resourceAPI = {
     const url = category 
       ? `/resources/course/${courseId}?category=${category}`
       : `/resources/course/${courseId}`;
-    return api.get(url);
+    return cachedGet(url);
   },
-  create: (data) => api.post('/resources', data),
-  update: (id, data) => api.put(`/resources/${id}`, data),
-  delete: (id) => api.delete(`/resources/${id}`)
+  create: (data) => api.post('/resources', data).then(r => { invalidateCache('/resources'); return r; }),
+  update: (id, data) => api.put(`/resources/${id}`, data).then(r => { invalidateCache('/resources'); return r; }),
+  delete: (id) => api.delete(`/resources/${id}`).then(r => { invalidateCache('/resources'); return r; })
 };
 
 // =====================================================
 // Teaching Assistant API
 // =====================================================
 export const taAPI = {
-  getByCourse: (courseId) => api.get(`/teaching-assistants/course/${courseId}`),
-  getById: (id) => api.get(`/teaching-assistants/${id}`),
-  create: (data) => api.post('/teaching-assistants', data),
-  update: (id, data) => api.put(`/teaching-assistants/${id}`, data),
-  delete: (id) => api.delete(`/teaching-assistants/${id}`)
+  getByCourse: (courseId) => cachedGet(`/teaching-assistants/course/${courseId}`),
+  getById: (id) => cachedGet(`/teaching-assistants/${id}`),
+  create: (data) => api.post('/teaching-assistants', data).then(r => { invalidateCache('/teaching-assistants'); return r; }),
+  update: (id, data) => api.put(`/teaching-assistants/${id}`, data).then(r => { invalidateCache('/teaching-assistants'); return r; }),
+  delete: (id) => api.delete(`/teaching-assistants/${id}`).then(r => { invalidateCache('/teaching-assistants'); return r; })
 };
 
 // =====================================================
@@ -320,5 +345,5 @@ export const userAPI = {
 };
 
 // Export safe API call helper for use in components
-export { safeApiCall };
+export { safeApiCall, invalidateCache };
 export default api;

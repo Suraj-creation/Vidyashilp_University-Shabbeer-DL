@@ -190,6 +190,25 @@ const optimizeQuery = (query, options = {}) => {
   return query;
 };
 
+// =====================================================
+// Cache Control Middleware
+// =====================================================
+
+/**
+ * Middleware to set Cache-Control headers for public GET routes.
+ * Data like courses and lectures change infrequently, so a short
+ * cache (5 min) reduces redundant DB queries significantly.
+ * 
+ * @param {number} maxAge - Cache duration in seconds (default: 300 = 5min)
+ */
+const cacheControl = (maxAge = 300) => (req, res, next) => {
+  // Only cache GET requests
+  if (req.method === 'GET') {
+    res.set('Cache-Control', `public, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${maxAge * 2}`);
+  }
+  next();
+};
+
 module.exports = {
   asyncHandler,
   withTimeout,
@@ -200,5 +219,6 @@ module.exports = {
   sendError,
   sendNotFound,
   handleRouteError,
-  optimizeQuery
+  optimizeQuery,
+  cacheControl
 };

@@ -1,48 +1,50 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { StudentAuthProvider, useStudentAuth } from './context/StudentAuthContext';
+import { ToastProvider, ConfirmProvider } from './context/ToastContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
+import './App.css';
+
+// =====================================================
+// Lazy-loaded Route Components (Code Splitting)
+// Each route loads its own JS chunk on demand
+// =====================================================
+
 // Public Pages
-import HomePage from './pages/public/HomePage';
-import LecturesPage from './pages/public/LecturesPage';
-import AssignmentsPage from './pages/public/AssignmentsPage';
-import ResourcesPage from './pages/public/ResourcesPage';
-import TutorialsPage from './pages/public/TutorialsPage';
-import ExamsPage from './pages/public/ExamsPage';
-import PrerequisitesPage from './pages/public/PrerequisitesPage';
+const HomePage = lazy(() => import('./pages/public/HomePage'));
+const LecturesPage = lazy(() => import('./pages/public/LecturesPage'));
+const AssignmentsPage = lazy(() => import('./pages/public/AssignmentsPage'));
+const ResourcesPage = lazy(() => import('./pages/public/ResourcesPage'));
+const TutorialsPage = lazy(() => import('./pages/public/TutorialsPage'));
+const ExamsPage = lazy(() => import('./pages/public/ExamsPage'));
+const PrerequisitesPage = lazy(() => import('./pages/public/PrerequisitesPage'));
 
 // Student Auth Pages
-import StudentLogin from './pages/student/StudentLogin';
-import StudentRegister from './pages/student/StudentRegister';
-import GoogleCallback from './pages/student/GoogleCallback';
+const StudentLogin = lazy(() => import('./pages/student/StudentLogin'));
+const StudentRegister = lazy(() => import('./pages/student/StudentRegister'));
+const GoogleCallback = lazy(() => import('./pages/student/GoogleCallback'));
 
 // Admin Pages
-import AdminLogin from './pages/admin/AdminLogin';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminLayout from './components/AdminLayout';
-import CourseManager from './pages/admin/CourseManager';
-import LectureManager from './pages/admin/LectureManager';
-import AssignmentManager from './pages/admin/AssignmentManager';
-import TutorialManager from './pages/admin/TutorialManager';
-import PrerequisiteManager from './pages/admin/PrerequisiteManager';
-import ExamManager from './pages/admin/ExamManager';
-import ResourceManager from './pages/admin/ResourceManager';
-import UserManager from './pages/admin/UserManager';
-
-import './App.css';
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminLayout = lazy(() => import('./components/AdminLayout'));
+const CourseManager = lazy(() => import('./pages/admin/CourseManager'));
+const LectureManager = lazy(() => import('./pages/admin/LectureManager'));
+const AssignmentManager = lazy(() => import('./pages/admin/AssignmentManager'));
+const TutorialManager = lazy(() => import('./pages/admin/TutorialManager'));
+const PrerequisiteManager = lazy(() => import('./pages/admin/PrerequisiteManager'));
+const ExamManager = lazy(() => import('./pages/admin/ExamManager'));
+const ResourceManager = lazy(() => import('./pages/admin/ResourceManager'));
+const UserManager = lazy(() => import('./pages/admin/UserManager'));
 
 // Protected Route Component for Admin
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div>Loading...</div>
-      </div>
-    );
+    return <div className="protected-loading"><div>Loading...</div></div>;
   }
 
   return isAuthenticated ? children : <Navigate to="/admin/login" />;
@@ -53,22 +55,31 @@ const ProtectedStudentRoute = ({ children }) => {
   const { isAuthenticated, loading } = useStudentAuth();
 
   if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'linear-gradient(135deg, #0f0a1f 0%, #1a1035 50%, #0d1b2a 100%)' }}>
-        <div style={{ color: '#a78bfa', fontSize: '18px' }}>Loading...</div>
-      </div>
-    );
+    return <div className="protected-loading protected-loading-dark"><div>Loading...</div></div>;
   }
 
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
+
+// Suspense fallback for lazy-loaded routes
+const PageLoader = () => (
+  <div className="page-loader">
+    <div style={{ textAlign: 'center' }}>
+      <div className="page-loader-spinner" />
+      <div className="page-loader-text">Loading...</div>
+    </div>
+  </div>
+);
 
 function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
         <StudentAuthProvider>
-          <Router>
+          <ToastProvider>
+            <ConfirmProvider>
+              <Router>
+                <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public Routes - Only Home page is public */}
               <Route path="/" element={
@@ -178,7 +189,10 @@ function App() {
               {/* 404 */}
               <Route path="*" element={<div>Page Not Found</div>} />
             </Routes>
-          </Router>
+            </Suspense>
+              </Router>
+            </ConfirmProvider>
+          </ToastProvider>
         </StudentAuthProvider>
       </AuthProvider>
     </ErrorBoundary>

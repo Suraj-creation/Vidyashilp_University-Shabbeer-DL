@@ -48,7 +48,6 @@ const Footer = () => {
             <ul>
               <li><Link to="/prerequisites">Prerequisites</Link></li>
               <li><Link to="/exams">Exam Schedule</Link></li>
-              <li><Link to="/teaching-team">Teaching Team</Link></li>
               <li>
                 <Link to="/admin/login" className="admin-link">
                   <FaShieldAlt /> Admin Portal

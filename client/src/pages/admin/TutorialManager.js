@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { tutorialAPI, courseAPI, lectureAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const TutorialManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [tutorials, setTutorials] = useState([]);
   const [courses, setCourses] = useState([]);
   const [lectures, setLectures] = useState([]);
@@ -45,10 +48,10 @@ const TutorialManager = () => {
     e.preventDefault();
     try {
       const data = { ...formData, courseId: selectedCourse, learningObjectives: formData.learningObjectives.filter(o => o.trim()), topicsCovered: formData.topicsCovered.filter(t => t.trim()), videos: formData.videos.filter(v => v.title.trim() || v.url.trim()), slides: formData.slides.filter(s => s.title.trim() || s.url.trim()), practiceProblems: formData.practiceProblems.filter(p => p.title.trim()) };
-      if (editingId) { await tutorialAPI.update(editingId, data); alert('Updated!'); }
-      else { await tutorialAPI.create(data); alert('Created!'); }
+      if (editingId) { await tutorialAPI.update(editingId, data); toast.success('Updated!'); }
+      else { await tutorialAPI.create(data); toast.success('Created!'); }
       resetForm(); loadTutorials();
-    } catch (e) { console.error(e); alert('Failed'); }
+    } catch (e) { console.error(e); toast.error('Failed to save'); }
   };
 
   const handleEdit = (t) => {
@@ -56,7 +59,7 @@ const TutorialManager = () => {
     setEditingId(t._id); setShowForm(true);
   };
 
-  const handleDelete = async (id) => { if (window.confirm('Delete?')) { try { await tutorialAPI.delete(id); alert('Deleted!'); loadTutorials(); } catch (e) { alert('Failed'); } } };
+  const handleDelete = async (id) => { const ok = await confirm('Delete this tutorial?'); if (ok) { try { await tutorialAPI.delete(id); toast.success('Deleted!'); loadTutorials(); } catch (e) { toast.error('Failed to delete'); } } };
   const resetForm = () => { setFormData({ tutorialNumber: '', title: '', briefSummary: '', description: '', learningObjectives: [''], topicsCovered: [''], coveredInLectures: [], whyItMatters: '', videos: [{ title: '', url: '', duration: '' }], slides: [{ title: '', url: '' }], practiceProblems: [{ title: '', url: '', solutionsUrl: '' }], isPublished: true }); setEditingId(null); setShowForm(false); };
 
   return (

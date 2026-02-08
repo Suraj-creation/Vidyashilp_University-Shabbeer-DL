@@ -40,15 +40,31 @@
     },
     {
       "src": "/static/(.*)",
-      "dest": "client/static/$1"
+      "dest": "client/static/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
     },
     {
-      "src": "/(.*\\.(js|css|json|ico|png|jpg|svg|woff|woff2|ttf|eot))",
-      "dest": "client/$1"
+      "src": "/(.*\\.(js|css|ico|png|jpg|svg|woff|woff2|ttf|eot))",
+      "dest": "client/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.json)",
+      "dest": "client/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
     },
     {
       "src": "/(.*)",
-      "dest": "client/index.html"
+      "dest": "client/index.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
     }
   ],
   "env": {

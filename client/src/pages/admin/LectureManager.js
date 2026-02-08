@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { lectureAPI, courseAPI } from '../../services/api';
+import { useToast, useConfirm } from '../../context/ToastContext';
 import './ManagerPage.css';
 
 const LectureManager = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [lectures, setLectures] = useState([]);
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -60,17 +63,17 @@ const LectureManager = () => {
       
       if (editingId) {
         await lectureAPI.update(editingId, dataToSubmit);
-        alert('Lecture updated successfully!');
+        toast.success('Lecture updated successfully!');
       } else {
         await lectureAPI.create(dataToSubmit);
-        alert('Lecture created successfully!');
+        toast.success('Lecture created successfully!');
       }
       
       resetForm();
       loadLectures();
     } catch (error) {
       console.error('Error saving lecture:', error);
-      alert('Error saving lecture');
+      toast.error('Error saving lecture');
     }
   };
 
@@ -81,14 +84,15 @@ const LectureManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this lecture?')) {
+    const ok = await confirm('Are you sure you want to delete this lecture?');
+    if (ok) {
       try {
         await lectureAPI.delete(id);
-        alert('Lecture deleted successfully!');
+        toast.success('Lecture deleted successfully!');
         loadLectures();
       } catch (error) {
         console.error('Error deleting lecture:', error);
-        alert('Error deleting lecture');
+        toast.error('Error deleting lecture');
       }
     }
   };
