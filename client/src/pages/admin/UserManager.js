@@ -284,12 +284,12 @@ const UserManager = () => {
         .stat-value {
           font-size: 1.75rem;
           font-weight: 700;
-          color: #e2e8f0;
+          color: #1e293b;
         }
 
         .stat-label {
           font-size: 0.875rem;
-          color: #94a3b8;
+          color: #64748b;
         }
 
         .search-section {
@@ -353,7 +353,7 @@ const UserManager = () => {
 
         .user-name {
           font-weight: 500;
-          color: #e2e8f0;
+          color: #1e293b;
         }
 
         .email-cell {

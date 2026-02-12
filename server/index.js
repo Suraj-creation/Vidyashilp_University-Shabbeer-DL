@@ -405,6 +405,7 @@ const tutorialRoutes = require('./routes/tutorials');
 const prerequisiteRoutes = require('./routes/prerequisites');
 const examRoutes = require('./routes/exams');
 const resourceRoutes = require('./routes/resources');
+const feedbackRoutes = require('./routes/feedback');
 const userRoutes = require('./routes/users'); // User authentication routes
 
 // API Routes
@@ -418,6 +419,7 @@ app.use('/api/tutorials', tutorialRoutes);
 app.use('/api/prerequisites', prerequisiteRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/resources', resourceRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // =====================================================
 // Health Check Endpoint - Production Grade

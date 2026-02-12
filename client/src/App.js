@@ -6,6 +6,7 @@ import { ToastProvider, ConfirmProvider } from './context/ToastContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import './App.css';
+import FeedbackWidget from './components/FeedbackWidget/FeedbackWidget';
 
 // =====================================================
 // Lazy-loaded Route Components (Code Splitting)
@@ -38,6 +39,7 @@ const PrerequisiteManager = lazy(() => import('./pages/admin/PrerequisiteManager
 const ExamManager = lazy(() => import('./pages/admin/ExamManager'));
 const ResourceManager = lazy(() => import('./pages/admin/ResourceManager'));
 const UserManager = lazy(() => import('./pages/admin/UserManager'));
+const FeedbackManager = lazy(() => import('./pages/admin/FeedbackManager'));
 
 // Protected Route Component for Admin
 const ProtectedRoute = ({ children }) => {
@@ -184,11 +186,13 @@ function App() {
                 <Route path="exams" element={<ExamManager />} />
                 <Route path="resources" element={<ResourceManager />} />
                 <Route path="users" element={<UserManager />} />
+                <Route path="feedback" element={<FeedbackManager />} />
               </Route>
 
               {/* 404 */}
               <Route path="*" element={<div>Page Not Found</div>} />
             </Routes>
+            <FeedbackWidget />
             </Suspense>
               </Router>
             </ConfirmProvider>
