@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { useStudentAuth } from '../../context/StudentAuthContext';
+import { FaCommentDots, FaTimes } from 'react-icons/fa';
 import { 
   FaBookOpen, 
   FaArrowRight, 
@@ -28,6 +30,39 @@ import './HomePage.css';
 // =====================================================
 
 const HomePage = () => {
+  const { isAuthenticated } = useStudentAuth();
+  const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
+
+  // Show feedback prompt when authenticated user visits home page
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Small delay so it feels natural after page load
+      const showTimer = setTimeout(() => setShowFeedbackPrompt(true), 1000);
+
+      // Start fade-out at 15s, fully hide at 15.5s
+      const fadeTimer = setTimeout(() => setFadeOut(true), 15500);
+      const hideTimer = setTimeout(() => {
+        setShowFeedbackPrompt(false);
+        setFadeOut(false);
+      }, 16000);
+
+      return () => {
+        clearTimeout(showTimer);
+        clearTimeout(fadeTimer);
+        clearTimeout(hideTimer);
+      };
+    }
+  }, [isAuthenticated]);
+
+  const dismissFeedbackPrompt = () => {
+    setFadeOut(true);
+    setTimeout(() => {
+      setShowFeedbackPrompt(false);
+      setFadeOut(false);
+    }, 400);
+  };
+
   // Course Statistics
   const courseStats = [
     { icon: <FaClock />, value: '15 Weeks', label: 'Duration' },
@@ -410,6 +445,22 @@ const HomePage = () => {
       </main>
 
       <Footer />
+
+      {/* Floating Feedback Prompt */}
+      {showFeedbackPrompt && (
+        <div className={`feedback-floating-prompt ${fadeOut ? 'fade-out' : 'fade-in'}`}>
+          <div className="feedback-prompt-icon">
+            <FaCommentDots />
+          </div>
+          <div className="feedback-prompt-content">
+            <p className="feedback-prompt-title">We'd love your feedback!</p>
+            <p className="feedback-prompt-text">Help us improve by sharing your experience with the course.</p>
+          </div>
+          <button className="feedback-prompt-dismiss" onClick={dismissFeedbackPrompt} aria-label="Dismiss">
+            <FaTimes />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -1304,3 +1304,110 @@
     justify-content: center;
   }
 }
+
+/* ============================================
+   FLOATING FEEDBACK PROMPT
+============================================ */
+.feedback-floating-prompt {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  color: #f0ecff;
+  padding: 16px 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(30, 27, 75, 0.45), 0 2px 8px rgba(0,0,0,0.15);
+  max-width: 400px;
+  backdrop-filter: blur(10px);
+  transform: translateY(0);
+  opacity: 1;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.feedback-floating-prompt.fade-in {
+  animation: feedbackSlideIn 0.5s ease forwards;
+}
+
+.feedback-floating-prompt.fade-out {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes feedbackSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.feedback-prompt-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.feedback-prompt-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.feedback-prompt-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 0 0 2px;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.feedback-prompt-text {
+  font-size: 0.8rem;
+  margin: 0;
+  color: #d4d0f8;
+  line-height: 1.4;
+}
+
+.feedback-prompt-dismiss {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s ease;
+  align-self: flex-start;
+}
+
+.feedback-prompt-dismiss:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .feedback-floating-prompt {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+    padding: 14px 16px;
+  }
+}
