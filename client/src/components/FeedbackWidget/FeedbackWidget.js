@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useStudentAuth } from '../../context/StudentAuthContext';
 import { courseAPI } from '../../services/api';
 import './FeedbackWidget.css';
 
@@ -9,7 +8,6 @@ const CATEGORIES = [
 ];
 
 const FeedbackWidget = () => {
-  const { isAuthenticated, student, token } = useStudentAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isPulsing, setIsPulsing] = useState(true);
   const [formData, setFormData] = useState({
@@ -26,7 +24,6 @@ const FeedbackWidget = () => {
 
   // Load courses for dropdown
   useEffect(() => {
-    if (!isAuthenticated) return;
     const loadCourses = async () => {
       try {
         const res = await courseAPI.getAll();
@@ -38,7 +35,7 @@ const FeedbackWidget = () => {
     if (isOpen && courses.length === 0) {
       loadCourses();
     }
-  }, [isOpen, courses.length, isAuthenticated]);
+  }, [isOpen, courses.length]);
 
   // Close widget when clicking outside
   useEffect(() => {
@@ -58,8 +55,6 @@ const FeedbackWidget = () => {
     if (isOpen) setIsPulsing(false);
   }, [isOpen]);
 
-  // Only show for logged-in students
-  if (!isAuthenticated) return null;
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -95,7 +90,6 @@ const FeedbackWidget = () => {
 
     setSubmitting(true);
     try {
-      const studentToken = token || localStorage.getItem('studentToken');
       const payload = {
         category: formData.category,
         message: formData.message.trim()
@@ -110,8 +104,7 @@ const FeedbackWidget = () => {
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${studentToken}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(payload)
         }
@@ -168,7 +161,7 @@ const FeedbackWidget = () => {
             <>
               <div className="feedback-panel-header">
                 <h3>💬 Course Feedback</h3>
-                <p>Hi {student?.name?.split(' ')[0] || 'there'}! Share your thoughts</p>
+                <p>Share your thoughts</p>
               </div>
 
               <form onSubmit={handleSubmit} className="feedback-form">

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaTimes, FaChevronRight, FaHome, FaBook, FaTasks, FaBookReader, FaClipboardList, FaFileAlt, FaBoxOpen, FaShieldAlt, FaBars, FaUser, FaSignOutAlt } from 'react-icons/fa';
-import { useStudentAuth } from '../context/StudentAuthContext';
+import { Link, useLocation } from 'react-router-dom';
+import { FaTimes, FaChevronRight, FaHome, FaBook, FaTasks, FaBookReader, FaClipboardList, FaFileAlt, FaBoxOpen, FaShieldAlt, FaBars } from 'react-icons/fa';
 import './Header.css';
 
 // Navigation items configuration - Updated order, removed My Progress, renamed Curriculum to Lectures
@@ -33,13 +32,6 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const location = useLocation();
-  const navigate = useNavigate();
-  const { student, isAuthenticated, logout } = useStudentAuth();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
 
   // Handle scroll effect
   useEffect(() => {
@@ -128,34 +120,10 @@ const Header = () => {
 
           {/* Header Actions */}
           <div className="header-actions">
-            {/* Show user info or login button based on auth state */}
-            {isAuthenticated ? (
-              <div className="user-menu">
-                <div className="user-profile-btn">
-                  {student?.avatar ? (
-                    <img src={student.avatar} alt={student.name} className="user-avatar" />
-                  ) : (
-                    <FaUser className="user-icon" />
-                  )}
-                  <span className="user-name">{student?.name?.split(' ')[0] || 'Student'}</span>
-                </div>
-                <button onClick={handleLogout} className="logout-btn" title="Logout">
-                  <FaSignOutAlt />
-                </button>
-              </div>
-            ) : (
-              <Link to="/login" className="login-btn">
-                <span>Login</span>
-              </Link>
-            )}
-
-            {/* Admin Portal Button - Only shown when no student is logged in */}
-            {!isAuthenticated && (
-              <Link to="/admin/login" className="admin-portal-btn">
-                <FaShieldAlt className="admin-icon" />
-                <span className="admin-text">Admin Portal</span>
-              </Link>
-            )}
+            <Link to="/admin/login" className="admin-portal-btn">
+              <FaShieldAlt className="admin-icon" />
+              <span className="admin-text">Admin Portal</span>
+            </Link>
 
             {/* Mobile Menu Toggle */}
             <button 
@@ -241,36 +209,13 @@ const Header = () => {
         </div>
 
         <div className="mobile-menu-footer">
-          {isAuthenticated ? (
-            <>
-              <div className="mobile-user-info">
-                <FaUser /> {student?.name?.split(' ')[0] || 'Welcome'}
-              </div>
-              <button 
-                onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
-                className="mobile-logout-btn"
-              >
-                <FaSignOutAlt /> Logout
-              </button>
-            </>
-          ) : (
-            <Link 
-              to="/login" 
-              className="mobile-login-btn"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <FaUser /> Login
-            </Link>
-          )}
-          {!isAuthenticated && (
-            <Link 
-              to="/admin/login" 
-              className="mobile-admin-btn"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <FaShieldAlt /> Admin Portal
-            </Link>
-          )}
+          <Link 
+            to="/admin/login" 
+            className="mobile-admin-btn"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <FaShieldAlt /> Admin Portal
+          </Link>
         </div>
       </nav>
     </>

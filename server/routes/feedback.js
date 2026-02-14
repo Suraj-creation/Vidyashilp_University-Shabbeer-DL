@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Feedback = require('../models/Feedback');
 const auth = require('../middleware/auth');
-const userAuth = require('../middleware/userAuth');
 const {
   asyncHandler,
   validateObjectId,
@@ -14,11 +13,11 @@ const {
 
 // =====================================================
 // @route   POST /api/feedback
-// @desc    Submit course feedback (student)
-// @access  Private (Student)
+// @desc    Submit course feedback (anonymous)
+// @access  Public
 // =====================================================
-router.post('/', userAuth, asyncHandler(async (req, res) => {
-  const { course, courseName, rating, category, message } = req.body;
+router.post('/', asyncHandler(async (req, res) => {
+  const { course, courseName, rating, category, message, userName, userEmail } = req.body;
 
   if (!message) {
     return res.status(400).json({
@@ -35,9 +34,8 @@ router.post('/', userAuth, asyncHandler(async (req, res) => {
   }
 
   const feedback = new Feedback({
-    user: req.user._id || req.user.id,
-    userName: req.user.name,
-    userEmail: req.user.email,
+    userName: userName || 'Anonymous',
+    userEmail: userEmail || undefined,
     course: course || undefined,
     courseName: courseName || undefined,
     rating: rating || undefined,

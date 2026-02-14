@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { useStudentAuth } from '../../context/StudentAuthContext';
 import { FaCommentDots, FaTimes } from 'react-icons/fa';
 import { 
   FaBookOpen, 
@@ -30,30 +29,27 @@ import './HomePage.css';
 // =====================================================
 
 const HomePage = () => {
-  const { isAuthenticated } = useStudentAuth();
   const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
 
-  // Show feedback prompt when authenticated user visits home page
+  // Show feedback prompt after a delay
   useEffect(() => {
-    if (isAuthenticated) {
-      // Small delay so it feels natural after page load
-      const showTimer = setTimeout(() => setShowFeedbackPrompt(true), 1000);
+    // Small delay so it feels natural after page load
+    const showTimer = setTimeout(() => setShowFeedbackPrompt(true), 1000);
 
-      // Start fade-out at 15s, fully hide at 15.5s
-      const fadeTimer = setTimeout(() => setFadeOut(true), 15500);
-      const hideTimer = setTimeout(() => {
-        setShowFeedbackPrompt(false);
-        setFadeOut(false);
-      }, 16000);
+    // Start fade-out at 15s, fully hide at 15.5s
+    const fadeTimer = setTimeout(() => setFadeOut(true), 15500);
+    const hideTimer = setTimeout(() => {
+      setShowFeedbackPrompt(false);
+      setFadeOut(false);
+    }, 16000);
 
-      return () => {
-        clearTimeout(showTimer);
-        clearTimeout(fadeTimer);
-        clearTimeout(hideTimer);
-      };
-    }
-  }, [isAuthenticated]);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(fadeTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
 
   const dismissFeedbackPrompt = () => {
     setFadeOut(true);
@@ -204,14 +200,10 @@ const HomePage = () => {
 
               {/* CTA Buttons */}
               <div className="hero-cta-group">
-                <Link to="/register" className="cta-primary-btn">
+                <Link to="/lectures" className="cta-primary-btn">
                   <FaGraduationCap />
-                  <span>Enroll Now</span>
+                  <span>Explore Course</span>
                   <FaArrowRight className="arrow-icon" />
-                </Link>
-
-                <Link to="/login" className="cta-secondary-btn">
-                  <span>Login</span>
                 </Link>
 
                 <Link to="/admin/login" className="cta-tertiary-btn">

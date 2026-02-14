@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { StudentAuthProvider, useStudentAuth } from './context/StudentAuthContext';
 import { ToastProvider, ConfirmProvider } from './context/ToastContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -22,10 +21,6 @@ const TutorialsPage = lazy(() => import('./pages/public/TutorialsPage'));
 const ExamsPage = lazy(() => import('./pages/public/ExamsPage'));
 const PrerequisitesPage = lazy(() => import('./pages/public/PrerequisitesPage'));
 
-// Student Auth Pages
-const StudentLogin = lazy(() => import('./pages/student/StudentLogin'));
-const StudentRegister = lazy(() => import('./pages/student/StudentRegister'));
-const GoogleCallback = lazy(() => import('./pages/student/GoogleCallback'));
 
 // Admin Pages
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
@@ -38,7 +33,6 @@ const TutorialManager = lazy(() => import('./pages/admin/TutorialManager'));
 const PrerequisiteManager = lazy(() => import('./pages/admin/PrerequisiteManager'));
 const ExamManager = lazy(() => import('./pages/admin/ExamManager'));
 const ResourceManager = lazy(() => import('./pages/admin/ResourceManager'));
-const UserManager = lazy(() => import('./pages/admin/UserManager'));
 const FeedbackManager = lazy(() => import('./pages/admin/FeedbackManager'));
 
 // Protected Route Component for Admin
@@ -52,16 +46,7 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/admin/login" />;
 };
 
-// Protected Route Component for Students (Public Course Content)
-const ProtectedStudentRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useStudentAuth();
 
-  if (loading) {
-    return <div className="protected-loading protected-loading-dark"><div>Loading...</div></div>;
-  }
-
-  return isAuthenticated ? children : <Navigate to="/login" />;
-};
 
 // Suspense fallback for lazy-loaded routes
 const PageLoader = () => (
@@ -77,7 +62,6 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <StudentAuthProvider>
           <ToastProvider>
             <ConfirmProvider>
               <Router>
@@ -90,74 +74,40 @@ function App() {
                 </ErrorBoundary>
               } />
               
-              {/* Protected Course Content - Requires Student Login */}
+              {/* Course Content - Public */}
               <Route path="/lectures" element={
-                <ProtectedStudentRoute>
-                  <ErrorBoundary>
-                    <LecturesPage />
-                  </ErrorBoundary>
-                </ProtectedStudentRoute>
+                <ErrorBoundary>
+                  <LecturesPage />
+                </ErrorBoundary>
               } />
               {/* Redirect old curriculum route to lectures */}
               <Route path="/curriculum" element={<Navigate to="/lectures" replace />} />
               <Route path="/assignments" element={
-                <ProtectedStudentRoute>
-                  <ErrorBoundary>
-                    <AssignmentsPage />
-                  </ErrorBoundary>
-                </ProtectedStudentRoute>
+                <ErrorBoundary>
+                  <AssignmentsPage />
+                </ErrorBoundary>
               } />
               <Route path="/tutorials" element={
-                <ProtectedStudentRoute>
-                  <ErrorBoundary>
-                    <TutorialsPage />
-                  </ErrorBoundary>
-                </ProtectedStudentRoute>
+                <ErrorBoundary>
+                  <TutorialsPage />
+                </ErrorBoundary>
               } />
               <Route path="/exams" element={
-                <ProtectedStudentRoute>
-                  <ErrorBoundary>
-                    <ExamsPage />
-                  </ErrorBoundary>
-                </ProtectedStudentRoute>
+                <ErrorBoundary>
+                <ExamsPage />
+                </ErrorBoundary>
               } />
               <Route path="/prerequisites" element={
-                <ProtectedStudentRoute>
-                  <ErrorBoundary>
-                    <PrerequisitesPage />
-                  </ErrorBoundary>
-                </ProtectedStudentRoute>
+                <ErrorBoundary>
+                  <PrerequisitesPage />
+                </ErrorBoundary>
               } />
               <Route path="/resources" element={
-                <ProtectedStudentRoute>
-                  <ErrorBoundary>
-                    <ResourcesPage />
-                  </ErrorBoundary>
-                </ProtectedStudentRoute>
+                <ErrorBoundary>
+                  <ResourcesPage />
+                </ErrorBoundary>
               } />
 
-              {/* Student Auth Routes */}
-              <Route path="/login" element={
-                <ErrorBoundary>
-                  <StudentLogin />
-                </ErrorBoundary>
-              } />
-              <Route path="/register" element={
-                <ErrorBoundary>
-                  <StudentRegister />
-                </ErrorBoundary>
-              } />
-              {/* Legacy routes redirect */}
-              <Route path="/student/login" element={<Navigate to="/login" replace />} />
-              <Route path="/student/register" element={<Navigate to="/register" replace />} />
-              <Route path="/auth/google/callback" element={
-                <ErrorBoundary>
-                  <GoogleCallback />
-                </ErrorBoundary>
-              } />
-              {/* Dashboard redirects to home - no separate dashboard page */}
-              <Route path="/dashboard" element={<Navigate to="/" replace />} />
-              <Route path="/student/dashboard" element={<Navigate to="/" replace />} />
 
               {/* Admin Login */}
               <Route path="/admin/login" element={
@@ -185,7 +135,6 @@ function App() {
                 <Route path="prerequisites" element={<PrerequisiteManager />} />
                 <Route path="exams" element={<ExamManager />} />
                 <Route path="resources" element={<ResourceManager />} />
-                <Route path="users" element={<UserManager />} />
                 <Route path="feedback" element={<FeedbackManager />} />
               </Route>
 
@@ -197,7 +146,6 @@ function App() {
               </Router>
             </ConfirmProvider>
           </ToastProvider>
-        </StudentAuthProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

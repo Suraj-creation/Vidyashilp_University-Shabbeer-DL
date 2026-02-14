@@ -103,25 +103,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// =====================================================
-// Passport.js Configuration for Google OAuth
-// (Session + Passport scoped to /api/users only)
-// =====================================================
-const passport = require('./config/passport');
-const session = require('express-session');
 
-const oauthSession = session({
-  secret: process.env.JWT_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000
-  }
-});
-
-// Create a mini-router that applies session + passport only to user/OAuth routes
-const oauthMiddleware = [oauthSession, passport.initialize(), passport.session()];
 
 // =====================================================
 // MongoDB Connection - Production Grade for Vercel
@@ -406,11 +388,8 @@ const prerequisiteRoutes = require('./routes/prerequisites');
 const examRoutes = require('./routes/exams');
 const resourceRoutes = require('./routes/resources');
 const feedbackRoutes = require('./routes/feedback');
-const userRoutes = require('./routes/users'); // User authentication routes
-
 // API Routes
 app.use('/api/auth', authRoutes); // Admin authentication
-app.use('/api/users', oauthMiddleware[0], oauthMiddleware[1], oauthMiddleware[2], userRoutes); // User/Student auth & OAuth (session scoped here)
 app.use('/api/courses', courseRoutes);
 app.use('/api/lectures', lectureRoutes);
 app.use('/api/assignments', assignmentRoutes);

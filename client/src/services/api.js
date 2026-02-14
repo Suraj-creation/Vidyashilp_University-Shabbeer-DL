@@ -189,10 +189,6 @@ export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   getCurrentAdmin: () => api.get('/auth/me'),
   changePassword: (data) => api.put('/auth/change-password', data),
-  // Admin User Management
-  getAllUsers: () => api.get('/users/admin/all'),
-  deleteUser: (id) => api.delete(`/users/admin/${id}`),
-  getUserStats: () => api.get('/users/admin/stats')
 };
 
 // =====================================================
@@ -292,60 +288,6 @@ export const taAPI = {
   delete: (id) => api.delete(`/teaching-assistants/${id}`).then(r => { invalidateCache('/teaching-assistants'); return r; })
 };
 
-// =====================================================
-// User/Student Authentication API
-// =====================================================
-export const userAPI = {
-  // Registration & Login
-  register: (data) => api.post('/users/register', data),
-  login: (data) => api.post('/users/login', data),
-  
-  // Profile - with optional token override for student auth
-  getMe: (token) => {
-    if (token) {
-      return api.get('/users/me', { 
-        headers: { Authorization: `Bearer ${token}` } 
-      });
-    }
-    return api.get('/users/me');
-  },
-  updateProfile: (data, token) => {
-    if (token) {
-      return api.put('/users/profile', data, { 
-        headers: { Authorization: `Bearer ${token}` } 
-      });
-    }
-    return api.put('/users/profile', data);
-  },
-  changePassword: (data, token) => {
-    if (token) {
-      return api.put('/users/change-password', data, { 
-        headers: { Authorization: `Bearer ${token}` } 
-      });
-    }
-    return api.put('/users/change-password', data);
-  },
-  
-  // Password Reset
-  forgotPassword: (data) => api.post('/users/forgot-password', data),
-  resetPassword: (token, data) => api.post(`/users/reset-password/${token}`, data),
-  
-  // Email Verification
-  verifyEmail: (token) => api.get(`/users/verify-email/${token}`),
-  resendVerification: (authToken) => {
-    if (authToken) {
-      return api.post('/users/resend-verification', {}, { 
-        headers: { Authorization: `Bearer ${authToken}` } 
-      });
-    }
-    return api.post('/users/resend-verification');
-  },
-  
-  // Google OAuth - These will redirect, not return data
-  googleLogin: () => {
-    window.location.href = `${API_URL}/users/google`;
-  }
-};
 
 // Export safe API call helper for use in components
 export { safeApiCall, invalidateCache };

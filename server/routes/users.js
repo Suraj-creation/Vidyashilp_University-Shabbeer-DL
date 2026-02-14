@@ -5,7 +5,6 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const userAuth = require('../middleware/userAuth');
 const sendEmail = require('../utils/sendEmail');
-const passport = require('../config/passport');
 
 // Rate limiting
 const rateLimit = require('express-rate-limit');
@@ -163,7 +162,7 @@ router.post('/login', authLimiter, async (req, res) => {
     if (user.authProvider !== 'local') {
       return res.status(400).json({
         success: false,
-        message: `This account was created with ${user.authProvider}. Please use "${user.authProvider === 'google' ? 'Continue with Google' : user.authProvider}" to login.`
+        message: `This account was created with ${user.authProvider}. Please contact support.`
       });
     }
 
@@ -609,138 +608,7 @@ router.post('/resend-verification', userAuth, async (req, res) => {
 });
 
 // ============================================
-// GOOGLE OAUTH ROUTES
+// GOOGLE OAUTH ROUTES - REMOVED
 // ============================================
-
-// @route   GET /api/users/google
-// @desc    Initiate Google OAuth
-// @access  Public
-router.get('/google',
-  passport.authenticate('google', {
-    scope: ['profile', 'email'],
-    session: false
-  })
-);
-
-// @route   GET /api/users/google/callback
-// @desc    Google OAuth callback
-// @access  Public
-router.get('/google/callback',
-  passport.authenticate('google', {
-    session: false,
-    failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=oauth_failed`
-  }),
-  (req, res) => {
-    try {
-      // Generate JWT token
-      const token = generateToken(req.user._id);
-      
-      // Determine frontend URL
-      const frontendUrl = process.env.NODE_ENV === 'production' 
-        ? process.env.FRONTEND_URL_PROD 
-        : process.env.FRONTEND_URL;
-      
-      // Redirect to frontend with token
-      res.redirect(`${frontendUrl}/auth/google/callback?token=${token}`);
-    } catch (error) {
-      console.error('OAuth callback error:', error);
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      res.redirect(`${frontendUrl}/login?error=oauth_failed`);
-    }
-  }
-);
-
-// ============================================
-// ADMIN USER MANAGEMENT ROUTES
-// ============================================
-
-// Import admin auth middleware
-const adminAuth = require('../middleware/auth');
-
-// @route   GET /api/users/admin/all
-// @desc    Get all registered users (Admin only)
-// @access  Private (Admin)
-router.get('/admin/all', adminAuth, async (req, res) => {
-  try {
-    const users = await User.find()
-      .select('-password -verificationToken -verificationTokenExpires -resetPasswordToken -resetPasswordExpires')
-      .sort({ createdAt: -1 })
-      .lean();
-
-    res.json({
-      success: true,
-      count: users.length,
-      data: users
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch users'
-    });
-  }
-});
-
-// @route   DELETE /api/users/admin/:id
-// @desc    Delete a user (Admin only)
-// @access  Private (Admin)
-router.delete('/admin/:id', adminAuth, async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    await User.findByIdAndDelete(req.params.id);
-
-    res.json({
-      success: true,
-      message: 'User deleted successfully'
-    });
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete user'
-    });
-  }
-});
-
-// @route   GET /api/users/admin/stats
-// @desc    Get user statistics (Admin only)
-// @access  Private (Admin)
-router.get('/admin/stats', adminAuth, async (req, res) => {
-  try {
-    const totalUsers = await User.countDocuments();
-    const googleUsers = await User.countDocuments({ authProvider: 'google' });
-    const localUsers = await User.countDocuments({ authProvider: 'local' });
-    const verifiedUsers = await User.countDocuments({ isEmailVerified: true });
-
-    // Get users registered in the last 7 days
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const recentUsers = await User.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
-
-    res.json({
-      success: true,
-      data: {
-        totalUsers,
-        googleUsers,
-        localUsers,
-        verifiedUsers,
-        recentUsers
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching user stats:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch user statistics'
-    });
-  }
-});
 
 module.exports = router;
